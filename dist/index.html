@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#142f2b">
+  <meta name="description" content="按考研大纲生成数学二、政治、英语二和南邮086100交通运输831运筹学练习。">
+  <title>研析 · 考研刷题台</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="主导航">
+      <a class="brand" href="#top" aria-label="研析首页">
+        <span class="brand-mark">研</span>
+        <span><strong>研析</strong><small>大纲驱动刷题台</small></span>
+      </a>
+
+      <nav class="nav-list">
+        <button class="nav-item active" data-view="practice">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h10a2 2 0 0 1 2 2v16l-7-3-7 3V5a2 2 0 0 1 2-2Z"/></svg>
+          今日刷题
+        </button>
+        <button class="nav-item" data-view="outline">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H11v16H6.5A2.5 2.5 0 0 0 4 21.5v-16ZM20 5.5A2.5 2.5 0 0 0 17.5 3H13v16h4.5a2.5 2.5 0 0 1 2.5 2.5v-16Z"/></svg>
+          大纲地图
+        </button>
+        <button class="nav-item" data-view="wrongbook">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4L16.5 3.5Z"/></svg>
+          错题回炉 <span class="nav-badge" id="wrongCount">0</span>
+        </button>
+        <button class="nav-item" data-view="custom">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          添加自建题
+        </button>
+      </nav>
+
+      <div class="sidebar-card">
+        <div class="eyebrow">本周节奏</div>
+        <div class="ring-row">
+          <div class="mini-ring" id="weekRing"><span id="weekPercent">0%</span></div>
+          <div><strong id="weekSolved">0 道</strong><small>目标 60 道</small></div>
+        </div>
+        <div class="tiny-progress"><span id="weekBar"></span></div>
+      </div>
+
+      <div class="version-note">
+        <span class="status-dot"></span>
+        <div><strong>2027 备考口径</strong><small>南邮专业课：831 运筹学</small></div>
+      </div>
+    </aside>
+
+    <main class="main" id="top">
+      <header class="topbar">
+        <button class="mobile-menu" id="mobileMenu" aria-label="打开导航">☰</button>
+        <div>
+          <div class="eyebrow" id="dateLabel">今日练习</div>
+          <h1>先做完，再看懂。</h1>
+        </div>
+        <div class="top-actions">
+          <button class="quiet-button" id="focusButton" title="切换专注模式">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+            专注
+          </button>
+          <button class="avatar" aria-label="学习档案">研</button>
+        </div>
+      </header>
+
+      <section class="control-deck" aria-label="组卷设置">
+        <div class="deck-copy">
+          <span class="pill">大纲内 · 原创题</span>
+          <h2 id="paperTitle">全科自适应练习</h2>
+          <p id="paperSubtitle">系统会优先抽取你的薄弱知识点；单套最多 20 题。</p>
+        </div>
+        <div class="control-grid">
+          <label>
+            <span>科目</span>
+            <select id="subjectSelect">
+              <option value="all">全科混合</option>
+              <option value="math">302 数学（二）</option>
+              <option value="politics">101 思想政治理论</option>
+              <option value="english">204 英语（二）</option>
+              <option value="ops">831 运筹学</option>
+            </select>
+          </label>
+          <label>
+            <span>题量</span>
+            <select id="countSelect">
+              <option value="5">5 题</option>
+              <option value="8" selected>8 题</option>
+              <option value="12">12 题</option>
+              <option value="16">16 题</option>
+              <option value="20">20 题</option>
+            </select>
+          </label>
+          <label>
+            <span>强度</span>
+            <select id="difficultySelect">
+              <option value="balanced">基础 / 强化混合</option>
+              <option value="basic">基础巩固</option>
+              <option value="core">核心强化</option>
+              <option value="challenge">拔高挑战</option>
+            </select>
+          </label>
+          <button class="primary-button" id="newPaperButton">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v6h-6"/></svg>
+            换一套
+          </button>
+        </div>
+        <div class="deck-footer">
+          <div class="coverage" id="coverageChips"></div>
+          <label class="switch-label">
+            <span>交卷后自动换题</span>
+            <input type="checkbox" id="autoRefresh" checked>
+            <i aria-hidden="true"></i>
+          </label>
+        </div>
+      </section>
+
+      <div class="study-layout">
+        <section class="paper-column">
+          <div class="paper-meta">
+            <div><span id="questionProgress">0 / 8 已作答</span><div class="paper-progress"><span id="paperProgressBar"></span></div></div>
+            <span class="save-state" id="saveState">● 已保存到本机</span>
+          </div>
+          <form id="quizForm">
+            <div id="questionList" class="question-list"></div>
+            <div class="submit-zone">
+              <div>
+                <strong>答题完成后再统一核对</strong>
+                <span>详解、知识点、公式与易错点均在全部题目之后。</span>
+              </div>
+              <button class="submit-button" type="submit">交卷并查看详解</button>
+            </div>
+          </form>
+
+          <section class="results hidden" id="results" aria-live="polite">
+            <div class="result-hero">
+              <div class="score-orb"><strong id="scoreValue">0</strong><span>客观题得分</span></div>
+              <div>
+                <div class="eyebrow">本套复盘</div>
+                <h2 id="resultTitle">把错因变成下一次的得分点</h2>
+                <p id="resultSummary"></p>
+              </div>
+              <button class="outline-button" id="cancelRefreshButton">取消自动换题</button>
+            </div>
+            <div class="analysis-heading">
+              <span>逐题详解</span>
+              <small>以下内容位于整套题目之后</small>
+            </div>
+            <div id="analysisList" class="analysis-list"></div>
+            <button class="primary-button wide" id="nextPaperButton">开始下一套</button>
+          </section>
+        </section>
+
+        <aside class="insight-column">
+          <div class="insight-card accent-card">
+            <div class="eyebrow">今日建议</div>
+            <h3 id="dailyAdvice">先稳住高频基础</h3>
+            <p id="adviceDetail">完成一套后，系统会依据错题更新这里。</p>
+          </div>
+          <div class="insight-card">
+            <div class="card-title"><h3>本套大纲覆盖</h3><button class="text-button" data-view="outline">查看大纲</button></div>
+            <div id="coverageList" class="coverage-list"></div>
+          </div>
+          <div class="insight-card formula-card">
+            <div class="eyebrow">随手记</div>
+            <p class="formula" id="formulaNote">A⁻¹ 存在 ⇔ r(A)=n ⇔ det(A)≠0</p>
+            <small id="formulaCaption">线性代数 · 可逆矩阵</small>
+          </div>
+          <div class="source-card">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Zm0-14v5m0 4h.01"/></svg>
+            <p>题目为按大纲原创训练，并非真题复刻。形势与政策等时效内容请以当年正式大纲为准。</p>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <dialog id="panelDialog" class="panel-dialog">
+    <div class="dialog-head">
+      <div><span class="eyebrow" id="dialogEyebrow">学习工具</span><h2 id="dialogTitle">大纲地图</h2></div>
+      <button class="icon-button" data-close-dialog aria-label="关闭">×</button>
+    </div>
+    <div id="dialogBody" class="dialog-body"></div>
+  </dialog>
+
+  <dialog id="customDialog" class="panel-dialog custom-dialog">
+    <form id="customForm">
+      <div class="dialog-head">
+        <div><span class="eyebrow">自建题库</span><h2>添加一道自己的题</h2></div>
+        <button class="icon-button" type="button" data-close-custom aria-label="关闭">×</button>
+      </div>
+      <div class="dialog-body custom-grid">
+        <label><span>科目</span><select name="subject" required><option value="math">数学（二）</option><option value="politics">思想政治理论</option><option value="english">英语（二）</option><option value="ops">831 运筹学</option></select></label>
+        <label><span>知识点</span><input name="topic" required placeholder="例如：线性规划对偶"></label>
+        <label class="full"><span>题目</span><textarea name="prompt" required rows="4" placeholder="输入题干"></textarea></label>
+        <label class="full"><span>参考答案</span><textarea name="answer" required rows="3" placeholder="输入答案或关键步骤"></textarea></label>
+        <label class="full"><span>详解</span><textarea name="explanation" required rows="4" placeholder="说明为什么，以及如何思考"></textarea></label>
+        <label class="full"><span>易错点</span><input name="trap" placeholder="例如：忽略非负约束"></label>
+        <button class="primary-button wide full" type="submit">保存到我的题库</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="./app.js"></script>
+</body>
+</html>
+
